@@ -1,0 +1,37 @@
+
+{% load static %}
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        <span class="brand-icon">EM</span>
+        <span>Employee<span class="brand-highlight">Hub</span></span>
+    </a>
+
+    <button
+        type="button"
+        class="navbar-toggle"
+        id="navbarToggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false"
+    >
+        ☰
+    </button>
+
+    <div class="navbar-links" id="navbarLinks">
+        <a href="/" class="nav-link" id="dashboardNavLink">
+            Dashboard
+        </a>
+
+        <a href="/login/" class="nav-link" id="loginNavLink">
+            Login
+        </a>
+
+        <button
+            type="button"
+            class="nav-logout hidden"
+            id="navbarLogoutButton"
+        >
+            Logout
+        </button>
+    </div>
+</nav>

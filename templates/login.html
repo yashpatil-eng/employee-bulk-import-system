@@ -1,0 +1,61 @@
+{% extends "main.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+<div class="login-page">
+    <section class="login-card">
+        <div class="login-brand">
+            <div class="login-logo">EM</div>
+            <p class="eyebrow">EMPLOYEE MANAGEMENT</p>
+        </div>
+
+        <h1>Welcome back</h1>
+        <p class="login-subtitle">
+            Sign in to manage employee imports and records.
+        </p>
+
+        <form id="loginForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    autocomplete="username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <div id="loginError" class="login-error hidden" role="alert"></div>
+            <p id="loginStatus" class="login-status" role="status"></p>
+
+            <button type="submit" id="loginButton" class="login-button">
+                Sign in
+            </button>
+        </form>
+
+        <p class="login-footer">
+            Employee Bulk Import System
+        </p>
+    </section>
+</div>
+
+<script src="{% static 'js/login.js' %}" defer></script>
+{% endblock %}

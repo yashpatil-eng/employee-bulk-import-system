@@ -1,0 +1,303 @@
+
+{% extends "main.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/employee_dashboard.css' %}">
+
+<div class="dashboard-container">
+
+<header class="dashboard-header">
+    <div>
+        <p class="eyebrow">EMPLOYEE MANAGEMENT</p>
+        <h1>Employee Bulk Import</h1>
+        <p class="subtitle">
+            Import, validate, search and manage employee records.
+        </p>
+    </div>
+
+    <div class="directory-actions">
+        <button type="button" id="refreshButton" class="btn btn-secondary">
+            Refresh employees
+        </button>
+    </div>
+</header>
+
+    <!-- Import Employees -->
+    <section class="panel">
+        <div class="section-heading">
+            <div>
+                <h2>Import employees</h2>
+                <p>Upload a CSV or Excel file to import employee records.</p>
+            </div>
+            <span class="file-badge">CSV / XLSX</span>
+        </div>
+
+        <form id="uploadForm" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label for="employeeFile" class="upload-area" id="uploadArea">
+                <span class="upload-icon">↑</span>
+                <strong>Choose a file to upload</strong>
+                <span>CSV or XLSX format</span>
+
+                <span id="selectedFileName" class="selected-file">
+                    No file selected
+                </span>
+
+                <input
+                    type="file"
+                    id="employeeFile"
+                    name="file"
+                    accept=".csv,.xlsx"
+                    required
+                >
+            </label>
+
+            <div class="form-actions">
+                <button type="submit" id="uploadButton" class="btn btn-primary">
+                    Upload and import
+                </button>
+                <span id="uploadStatus" class="status-text" role="status"></span>
+            </div>
+        </form>
+
+        <div id="uploadError"
+             class="alert alert-error hidden"
+             role="alert"></div>
+    </section>
+
+    <!-- Import Results -->
+    <section id="importResults" class="hidden">
+        <div class="section-heading result-heading">
+            <div>
+                <h2>Import summary</h2>
+                <p id="resultFilename">Import results</p>
+            </div>
+
+            <button type="button" id="closeResults" class="btn btn-secondary">
+                Close
+            </button>
+        </div>
+
+        <div class="summary-grid">
+            <article class="summary-card">
+                <span>Total rows</span>
+                <strong id="totalRows">0</strong>
+            </article>
+
+            <article class="summary-card summary-success">
+                <span>Imported</span>
+                <strong id="importedRows">0</strong>
+            </article>
+
+            <article class="summary-card summary-danger">
+                <span>Failed</span>
+                <strong id="failedRows">0</strong>
+            </article>
+        </div>
+
+        <div id="importMessage" class="alert alert-info"></div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Row</th>
+                        <th>Employee</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Salary</th>
+                        <th>Status</th>
+                        <th>Validation errors</th>
+                    </tr>
+                </thead>
+
+                <tbody id="importResultsBody">
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            No import results available.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-actions">
+            <button
+                type="button"
+                id="downloadFailedButton"
+                class="btn btn-secondary hidden"
+            >
+                Download failed records
+            </button>
+        </div>
+    </section>
+
+    <!-- Employee Directory -->
+    <section class="panel employee-panel">
+
+        <div class="section-heading">
+            <div>
+                <h2>Employee directory</h2>
+                <p>Search, filter and browse imported employee records.</p>
+            </div>
+
+            <div class="directory-actions">
+                <span id="employeeCount" class="count-badge">
+                    0 employees
+                </span>
+
+                <button
+                    type="button"
+                    id="exportCsvButton"
+                    class="btn btn-secondary"
+                >
+                    Export CSV
+                </button>
+
+                <button
+                    type="button"
+                    id="exportExcelButton"
+                    class="btn btn-secondary"
+                >
+                    Export Excel
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <form id="filterForm" class="filter-grid">
+
+            <div class="form-group">
+                <label for="searchInput">Search</label>
+                <input
+                    type="search"
+                    id="searchInput"
+                    name="search"
+                    placeholder="Name or email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="departmentInput">Department</label>
+                <input
+                    type="text"
+                    id="departmentInput"
+                    name="department"
+                    placeholder="e.g. IT"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="minSalaryInput">Minimum salary</label>
+                <input
+                    type="number"
+                    id="minSalaryInput"
+                    name="min_salary"
+                    min="0"
+                    step="0.01"
+                    placeholder="0"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="maxSalaryInput">Maximum salary</label>
+                <input
+                    type="number"
+                    id="maxSalaryInput"
+                    name="max_salary"
+                    min="0"
+                    step="0.01"
+                    placeholder="Any"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="pageSizeInput">Rows per page</label>
+                <select id="pageSizeInput" name="page_size">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    Apply filters
+                </button>
+
+                <button
+                    type="button"
+                    id="clearFiltersButton"
+                    class="btn btn-secondary"
+                >
+                    Clear
+                </button>
+            </div>
+        </form>
+
+        <div id="employeeError"
+             class="alert alert-error hidden"
+             role="alert"></div>
+
+        <!-- Employees Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Employee name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Salary</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+
+                <tbody id="employeeTableBody">
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            Loading employees...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <span id="paginationInfo">Page 1</span>
+
+            <div class="pagination-actions">
+                <button
+                    type="button"
+                    id="previousPageButton"
+                    class="btn btn-secondary"
+                    disabled
+                >
+                    Previous
+                </button>
+
+                <button
+                    type="button"
+                    id="nextPageButton"
+                    class="btn btn-secondary"
+                    disabled
+                >
+                    Next
+                </button>
+            </div>
+        </div>
+
+    </section>
+
+    <footer class="dashboard-footer">
+        Employee Bulk Import System · Django REST Framework
+    </footer>
+
+</div>
+
+<script src="{% static 'js/employee_dashboard.js' %}" defer></script>
+{% endblock %}
